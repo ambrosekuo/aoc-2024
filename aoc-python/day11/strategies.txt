@@ -1,0 +1,28 @@
+Current Issue:
+
+My array tracking is inefficient becaue eventually I have to keep recalculating similar things I've already seen.
+
+Let's say I've seen something like 0->1->2024, I can start putting them in each one and determine the next one without any calculation.
+
+
+If I reach an existing tracker, I don't really need to compute anymore...
+
+What if something is being tracked at 60, I hit it at 10 deep, i don't really know it past 15 iterations. Does it guarantee to loop?
+
+
+{
+    x: [stone_1, stone2_maybe],
+
+}
+
+^Was much more efficient but not nearly enough
+
+
+Strategy 2:
+I get out of recursion and treat it blink by blink.
+
+I throw the stones into piles, If you're in the same pile, same calculation forever.
+Separated stones still thrown in pile.
+
+
+Extra??: If pile ever equal some old pile, if we save pile memory, maybe can predict where it will be x blinks in the future.
