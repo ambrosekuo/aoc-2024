@@ -47,35 +47,16 @@ def solve_for_b(problem, a):
   return (problem['Prize'][0] - a*problem['A'][0])/problem['B'][0]
 
 def mathier_solve(problem):
-  precision = 0.000000000000000001
   a_maybe_decimal = solve_for_a(problem)
-  integer_part = int(a_maybe_decimal)
-  decimal_difference = abs(a_maybe_decimal - integer_part)
-  
-  # if a_maybe_decimal != int(a_maybe_decimal) and ((not decimal_difference <= precision * integer_part)
-  #                                             and decimal_difference <= precision_2 * integer_part) :
-  #   # breakpoint()
-  #   pass
-  
-  if decimal_difference <= precision * integer_part:
-    print(a_maybe_decimal)
-    a =a_maybe_decimal
-  else:
-    return None
-  
-  b_maybe_decimal = solve_for_b(problem, a)
-  integer_part = int(b_maybe_decimal)
-  decimal_difference = abs(b_maybe_decimal - integer_part)
-  if decimal_difference <= precision * integer_part:
-    print(b_maybe_decimal)
-    b = b_maybe_decimal
-  else:
+  b_maybe_decimal = solve_for_b(problem, a_maybe_decimal)
+  if a_maybe_decimal < 0 or b_maybe_decimal < 0:
     return None
     
   solve = lambda a, b: [a*(problem['A'][0]) + b*problem['B'][0], a*(problem['A'][1]) + b*problem['B'][1]]
   
-  if solve(a_maybe_decimal,b_maybe_decimal) == problem['Prize']:
-    return a*3 + b
+  # breakpoint()
+  if solve(round(a_maybe_decimal),round(b_maybe_decimal)) == problem['Prize']:
+    return 3*round(a_maybe_decimal) + round(b_maybe_decimal)
   else:
     return None
   
