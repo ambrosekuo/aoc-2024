@@ -85,8 +85,6 @@ def get_fragmented_files(line_arr):
                 line_arr[last_file_index] = 0
                 line_arr[i] = fragments_underfilled
                 last_file_index -= 2 # subtract 2 since -1 is an empty file space
-           
-        # breakpoint()
         
     return fragmented_files
 
