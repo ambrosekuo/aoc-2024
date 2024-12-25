@@ -1,0 +1,47 @@
+Plan
+
+We are doing same thing for 1 and 2.
+
+So just need to be able to translate buttons based off of arrows required from the 1st layer.
+
+
+To consider, does the first layer being most efficient imply the other two layers are efficient? unsure.
+
+Efficiencies I can make:
+• consecutive button presses always most efficient
+• up and right arrow always closes to the click. So always better to start on the left side.
+
+
+So, find amount of presses to get to position:
+let's say we have ^^A
+
+
+Make a grid with illegal points.
+if grid == 'x':
+continue
+
+
+GRID_CONTROL = [['X', '^', 'A'], ['<', 'v', '>']]
+
+def get_letter_mapping(grid):
+  letter_mapping = {}
+  for y, arr in enumerate(grid):
+     for x, item in enumerate(arr):
+          letter_mapping[item] = [x, y]
+  return letter_mapping
+
+GRID_MAPPING = get_letter_mapping(GRID_CONTROL)
+
+
+#Assumption : one of the x or y directions will exist. Can't have somewhere where we have to take a longer direction around. 
+
+However we had to consider both paths since one of them can end up being more efficient with same button presses. So, do we consider the whole way first? idk.
+Maybe consider whole way first.
+
+def get_travel_path(box1, box2):
+    path = []
+    
+   
+
+
+
