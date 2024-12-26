@@ -129,7 +129,7 @@ VARIANTS = {
     ],
 }
 
-def get_possible_changes(z_values, expected_arr, i):
+def get_possible_changes(expected_arr, i):
     possible_changes = []
     # im pretty sure it can equal to each other and still require changes, maybe we look for cases anyways
     for [val, next_val] in VARIANTS[expected_arr[i]]:
@@ -141,23 +141,44 @@ def get_possible_changes(z_values, expected_arr, i):
     
 # current
 #  changes_made = [[index, new_val]]
-def solve(expected_arr, initial_z_values, i, changes_made, limit, answers):
-    z_values = initial_z_values.copy()
-    while i < len(expected_arr):
-        possible_changes = get_possible_changes(z_values, expected_arr, i)
-        answer_arr = get_answer_arr(z_values, len(expected_arr))
-        for [val, next_val] in possible_changes:
+def solve(expected_arr, z_values, i, changes_made, limit):
+    if i >= len(expected_arr):
+        return [changes_made]
+
+    if len(changes_made) > limit:
+        return []
+
+    possible_changes = get_possible_changes(expected_arr, i)
+    answer_arr = get_answer_arr(z_values, len(expected_arr))
+    answers = []
+    for [val, next_val] in possible_changes:
+        if val == answer_arr[i] and val == expected_arr[i]:
+            # if changes_made == [[0, '1'], [3, '0']]:
+            #     breakpoint()
+            sub_answers = solve(expected_arr, z_values, i+1, changes_made, limit)
+            answers += sub_answers
+            continue
+        if next_val is None:
+            sub_answers = solve(expected_arr, z_values, i+1, changes_made+[[i,val]], limit)
+            answers += sub_answers
+        else:
+            # discard this
+            if i+1 >= len(expected_arr):
+                continue
+            new_expected_arr = expected_arr.copy()
+            new_expected_arr[i+1] = next_val
+            sub_answers = solve(new_expected_arr, z_values, i+1, changes_made+[[i,val]], limit)
+            answers += sub_answers
             
+    return answers
 
 # 100 
 # 001 => lets say i need 0, i can either add 0 or 10. Or result of 1 10 => 100
 # create mappings of each possibility and go down that path?
 # lets say i do have it. i check through if it's possible to swap with others...
-
 # cant retrieve from the bottom because the bottom combinations can affect the top/have to revisit
-
 # can top affect bottom? no. if im too far that's fine, assume its same length for now
-def find_all_required_swaps(all_inputs, outputs: list, expected):
+def find_all_swappable_choices(all_inputs, outputs: list, expected):
     z_mappings = [r for [a,o,b,r] in outputs if r[0] == 'z']
     z_mappings.sort(reverse=True)
     i = 0 #len(values) -1
@@ -166,7 +187,6 @@ def find_all_required_swaps(all_inputs, outputs: list, expected):
         answer = add(bin_val(all_inputs[z_mappings[i]], i), answer)
         
         i += 1
-    print(answer)
     if len(answer) > len(expected):
         expected_arr  = list(("0" * (len(answer) - len(expected))) + expected)
     elif len(answer) <= len(expected):
@@ -174,12 +194,38 @@ def find_all_required_swaps(all_inputs, outputs: list, expected):
 
     z_values = [all_inputs[z_name] for z_name in z_mappings]
         
-    solve(expected_arr, z_values, 0, [], 2, []) # at least we can hardcode this lmao
+    answers = solve(expected_arr, z_values, 0, [], 8) # at least we can hardcode this lmao
+
+    return answers, len(z_mappings)
+
+def get_inputs_inverse(inputs):
+    return {key: [name for name in inputs if inputs[name] == key] for key in set(inputs.values())} 
+
+# we're counting backwards, with max z at front
+# i = 4
+def get_z_name_from_index(i, z_count):
+    return "z{:03}".format(z_count-i)
+
+def get_swaps(changes_needed, swapped, z_length):
+    for [z_i, val] in changes_needed:
+        get_z_name_from_index(z_i, z_length)
+    
+
+def get_swap_solutions(answers, all_inputs, z_length):
+    val_to_name = get_inputs_inverse(all_inputs)
+    breakpoint()
+    for changes_needed in answers:
+        sol = get_swaps(changes_needed, {}, z_length)
+        if sol:
+            return sol
+    
 
 inputs, outputs = get_input_from_file()
+
 all_inputs = solve_all_inputs(inputs,outputs)
 output_expected = get_output_expected(inputs)
-answer = find_all_required_swaps(all_inputs,outputs, output_expected)
+answers, z_length = find_all_swappable_choices(all_inputs, outputs, output_expected)
+swap_names = get_swap_solutions(answers, all_inputs, z_length)
 
 # print(answer)
         
